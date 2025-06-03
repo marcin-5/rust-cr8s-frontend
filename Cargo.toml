@@ -7,3 +7,6 @@ edition = "2024"
 yew = { version = "0.21.0", features = ["csr"] }
 web-sys = { version = "0.3", features = ["HtmlInputElement"] }
 gloo-console = "0.3"
+gloo-net = "0.6"
+serde = "1.0"
+serde_json = "1.0"
