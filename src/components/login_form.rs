@@ -1,10 +1,12 @@
 use crate::api::user::{api_login, api_me, LoginResponse, MeResponse};
 use crate::components::alert::*;
 use crate::components::input::*;
+use crate::Route;
 use gloo_console::log;
 use web_sys::HtmlInputElement;
 use yew::platform::spawn_local;
 use yew::prelude::*;
+use yew_router::prelude::*;
 
 #[derive(Default, Clone)]
 struct LoginCredentials {
@@ -31,6 +33,7 @@ async fn login(
 
 #[function_component(LoginForm)]
 pub fn login_form() -> Html {
+    let navigator = use_navigator();
     let credentials = use_state(LoginCredentials::default);
     let error_message_handle = use_state(String::default);
     let error_message = (*error_message_handle).clone();
@@ -67,9 +70,15 @@ pub fn login_form() -> Html {
         e.prevent_default();
         let creds = (*form_credentials).clone();
         let error_handle = cloned_error_handle.clone();
+        let cloned_navigator = navigator.clone();
         spawn_local(async move {
             match login(creds.username, creds.password).await {
-                Ok(responses) => log!(responses.1.username),
+                Ok(responses) => {
+                    log!(responses.1.username);
+                    if let Some(nav) = cloned_navigator {
+                        nav.push(&Route::Home);
+                    }
+                }
                 Err(e) => error_handle.set(display_error(&e)),
             }
         });
