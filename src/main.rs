@@ -23,6 +23,7 @@ enum Route {
 fn switch(route: Route) -> Html {
     match route {
         Route::Login => html! { <pages::login::Login /> },
+        Route::Home => html! { <pages::home::Home /> },
         _ => html! { <pages::not_found::NotFound /> },
     }
 }
