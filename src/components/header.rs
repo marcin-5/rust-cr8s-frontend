@@ -8,7 +8,7 @@ use yew_router::prelude::*;
 #[function_component(Header)]
 pub fn header() -> Html {
     let current_user_ctx =
-        use_context::<CurrentUserContext>().expect("Current user context is missing");
+        use_context::<CurrentUserContext>().expect("The current user context is missing");
 
     if current_user_ctx.is_loading {
         return html! {
