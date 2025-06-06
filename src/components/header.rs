@@ -16,7 +16,7 @@ pub fn header() -> Html {
             let onclick = Callback::from(move |e: MouseEvent| {
                 e.prevent_default();
                 cloned_user_ctx.dispatch(CurrentUserDispatchActions {
-                    actions_type: CurrentUserActions::LoginFail,
+                    action_type: CurrentUserActions::LoginFail,
                     login_response: None,
                     me_response: None,
                 });

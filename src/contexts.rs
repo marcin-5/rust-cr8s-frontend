@@ -19,7 +19,7 @@ pub enum CurrentUserActions {
 }
 
 pub struct CurrentUserDispatchActions {
-    pub actions_type: CurrentUserActions,
+    pub action_type: CurrentUserActions,
     pub login_response: Option<LoginResponse>,
     pub me_response: Option<MeResponse>,
 }
@@ -27,7 +27,7 @@ pub struct CurrentUserDispatchActions {
 impl Reducible for CurrentUser {
     type Action = CurrentUserDispatchActions;
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
-        match action.actions_type {
+        match action.action_type {
             CurrentUserActions::LoginSuccess => {
                 let login_response = action.login_response.expect("Missing login response");
                 let me_response = action.me_response.expect("Missing login response");
@@ -66,7 +66,7 @@ pub fn current_user_provider(props: &Props) -> Html {
                 match api_me(&token).await {
                     Ok(me_response) => {
                         cloned_user.dispatch(CurrentUserDispatchActions {
-                            actions_type: CurrentUserActions::LoginSuccess,
+                            action_type: CurrentUserActions::LoginSuccess,
                             login_response: Some(LoginResponse { token }),
                             me_response: Some(me_response),
                         });

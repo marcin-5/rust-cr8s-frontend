@@ -78,7 +78,7 @@ pub fn login_form() -> Html {
             match login(creds.username, creds.password).await {
                 Ok(responses) => {
                     cloned_current_user_ctx.dispatch(CurrentUserDispatchActions {
-                        actions_type: CurrentUserActions::LoginSuccess,
+                        action_type: CurrentUserActions::LoginSuccess,
                         login_response: Some(responses.0),
                         me_response: Some(responses.1),
                     });
