@@ -2,7 +2,6 @@ use crate::api::API_URL;
 use gloo_net::http::Request;
 use gloo_net::Error;
 use serde::{Deserialize, Serialize};
-use serde_json::json;
 
 #[derive(PartialEq, Clone, Serialize, Deserialize)]
 pub struct User {
@@ -16,20 +15,33 @@ pub struct LoginResponse {
     pub token: String,
 }
 
-pub async fn api_login(username: String, password: String) -> Result<LoginResponse, Error> {
+pub async fn api_login(
+    username: String,
+    password: String,
+) -> Result<LoginResponse, gloo_net::Error> {
     let response = Request::post(&format!("{}/login", &*API_URL))
-        .json(&json!({ "username": username, "password": password }))?
+        .json(&serde_json::json!({
+            "username": username,
+            "password": password
+        }))?
         .send()
         .await?;
 
+    if response.status() == 401 {
+        return Err(gloo_net::Error::GlooError(
+            "Invalid credentials".to_string(),
+        ));
+    }
+
     if !response.ok() {
-        return Err(Error::GlooError(format!(
-            "Login failed with status: {}",
+        return Err(gloo_net::Error::GlooError(format!(
+            "Request failed with status: {}",
             response.status()
         )));
     }
 
-    response.json::<LoginResponse>().await
+    let login_response: LoginResponse = response.json().await?;
+    Ok(login_response)
 }
 
 pub async fn api_me(token: &str) -> Result<User, Error> {

@@ -16,9 +16,15 @@ struct LoginCredentials {
 
 fn display_error(err: &gloo_net::Error) -> String {
     match err {
+        gloo_net::Error::GlooError(e) => {
+            if e.contains("Invalid credentials") {
+                "Invalid username or password".to_string()
+            } else {
+                format!("Error: {}", e)
+            }
+        }
         gloo_net::Error::JsError(e) => format!("Network error: {}", e),
         gloo_net::Error::SerdeError(e) => format!("Data parsing error: {}", e),
-        _ => "Unknown error occurred".to_string(),
     }
 }
 
