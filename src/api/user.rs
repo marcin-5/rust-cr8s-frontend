@@ -4,7 +4,7 @@ use gloo_net::Error;
 use serde::Deserialize;
 use serde_json::json;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub struct User {
     pub id: i32,
     pub username: String,

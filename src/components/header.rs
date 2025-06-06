@@ -10,6 +10,16 @@ pub fn header() -> Html {
     let current_user_ctx =
         use_context::<CurrentUserContext>().expect("Current user context is missing");
 
+    if current_user_ctx.is_loading {
+        return html! {
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">{"Loading..."}</span>
+                </div>
+            </div>
+        };
+    }
+
     match &current_user_ctx.user {
         Some(user) => {
             let cloned_user_ctx = current_user_ctx.clone();
