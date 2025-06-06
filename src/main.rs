@@ -3,6 +3,7 @@ use yew_router::prelude::*;
 
 mod api;
 mod components;
+mod contexts;
 mod pages;
 
 #[derive(Routable, PartialEq, Clone)]
@@ -32,7 +33,9 @@ fn switch(route: Route) -> Html {
 fn app() -> Html {
     html! {
         <BrowserRouter>
-            <Switch<Route> render ={ switch } />
+            <contexts::CurrentUserProvider>
+                <Switch<Route> render ={ switch } />
+            </contexts::CurrentUserProvider>
         </BrowserRouter>
     }
 }
