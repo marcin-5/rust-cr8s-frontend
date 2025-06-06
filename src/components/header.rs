@@ -1,5 +1,5 @@
 use crate::{
-    contexts::{CurrentUserActions, CurrentUserContext, CurrentUserDispatchActions},
+    contexts::{CurrentUserAction, CurrentUserContext},
     Route,
 };
 use yew::prelude::*;
@@ -25,11 +25,7 @@ pub fn header() -> Html {
             let cloned_user_ctx = current_user_ctx.clone();
             let onclick = Callback::from(move |e: MouseEvent| {
                 e.prevent_default();
-                cloned_user_ctx.dispatch(CurrentUserDispatchActions {
-                    action_type: CurrentUserActions::LoginFail,
-                    login_response: None,
-                    me_response: None,
-                });
+                cloned_user_ctx.dispatch(CurrentUserAction::LoginFail);
             });
             html! {
                 <div class="text-end">

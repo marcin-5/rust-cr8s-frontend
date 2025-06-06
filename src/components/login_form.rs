@@ -1,7 +1,7 @@
-use crate::api::user::{api_login, api_me, LoginResponse, MeResponse};
+use crate::api::user::{api_login, api_me, LoginResponse, MeResponse, User};
 use crate::components::alert::*;
 use crate::components::input::*;
-use crate::contexts::{CurrentUserActions, CurrentUserContext, CurrentUserDispatchActions};
+use crate::contexts::{CurrentUserAction, CurrentUserContext};
 use crate::Route;
 use web_sys::HtmlInputElement;
 use yew::platform::spawn_local;
@@ -76,11 +76,15 @@ pub fn login_form() -> Html {
         let cloned_current_user_ctx = current_user_ctx.clone();
         spawn_local(async move {
             match login(creds.username, creds.password).await {
-                Ok(responses) => {
-                    cloned_current_user_ctx.dispatch(CurrentUserDispatchActions {
-                        action_type: CurrentUserActions::LoginSuccess,
-                        login_response: Some(responses.0),
-                        me_response: Some(responses.1),
+                Ok((login_response, me_response)) => {
+                    let user = User {
+                        id: me_response.id,
+                        username: me_response.username,
+                        created_at: me_response.created_at,
+                    };
+                    cloned_current_user_ctx.dispatch(CurrentUserAction::LoginSuccess {
+                        token: login_response.token,
+                        user,
                     });
                     if let Some(nav) = cloned_navigator {
                         nav.push(&Route::Home);

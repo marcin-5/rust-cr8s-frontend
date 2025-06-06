@@ -5,6 +5,8 @@ use yew::platform::spawn_local;
 use ::yew::prelude::*;
 use yew::{Reducible, UseReducerHandle};
 
+const SESSION_TOKEN_KEY: &str = "cr8s_token";
+
 pub type CurrentUserContext = UseReducerHandle<CurrentUser>;
 
 #[derive(PartialEq)]
@@ -17,7 +19,7 @@ pub struct CurrentUser {
 impl Default for CurrentUser {
     fn default() -> Self {
         // Start in loading state if there's a token to check
-        let is_loading = SessionStorage::get::<String>("cr8s_token").is_ok();
+        let is_loading = SessionStorage::get::<String>(SESSION_TOKEN_KEY).is_ok();
         Self {
             user: None,
             token: None,
@@ -26,44 +28,34 @@ impl Default for CurrentUser {
     }
 }
 
-pub enum CurrentUserActions {
-    LoginSuccess,
+pub enum CurrentUserAction {
+    LoginSuccess { token: String, user: User },
     LoginFail,
-    StartLoading,
-}
-
-pub struct CurrentUserDispatchActions {
-    pub action_type: CurrentUserActions,
-    pub login_response: Option<LoginResponse>,
-    pub me_response: Option<MeResponse>,
 }
 
 impl Reducible for CurrentUser {
-    type Action = CurrentUserDispatchActions;
+    type Action = CurrentUserAction;
+
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
-        match action.action_type {
-            CurrentUserActions::StartLoading => Self {
-                user: self.user.clone(),
-                token: self.token.clone(),
-                is_loading: true,
-            }
-            .into(),
-            CurrentUserActions::LoginSuccess => {
-                let login_response = action.login_response.expect("Missing login response");
-                let me_response = action.me_response.expect("Missing login response");
-                SessionStorage::set("cr8s_token", login_response.token.clone()).unwrap();
+        match action {
+            CurrentUserAction::LoginSuccess { token, user } => {
+                if let Err(_) = SessionStorage::set(SESSION_TOKEN_KEY, token.clone()) {
+                    // Handle storage error by treating as login failure
+                    return Self {
+                        user: None,
+                        token: None,
+                        is_loading: false,
+                    }
+                    .into();
+                }
                 Self {
-                    user: Some(User {
-                        id: me_response.id,
-                        username: me_response.username,
-                        created_at: me_response.created_at,
-                    }),
-                    token: Some(login_response.token),
+                    user: Some(user),
+                    token: Some(token),
                     is_loading: false,
                 }
                 .into()
             }
-            CurrentUserActions::LoginFail => {
+            CurrentUserAction::LoginFail => {
                 SessionStorage::clear();
                 Self {
                     user: None,
@@ -84,29 +76,25 @@ pub struct Props {
 #[function_component(CurrentUserProvider)]
 pub fn current_user_provider(props: &Props) -> Html {
     let user = use_reducer(CurrentUser::default);
-
     let initial_check = use_state(|| false);
 
     if !*initial_check {
         initial_check.set(true);
-        if let Ok(token) = SessionStorage::get::<String>("cr8s_token") {
+        if let Ok(token) = SessionStorage::get::<String>(SESSION_TOKEN_KEY) {
             let cloned_user = user.clone();
             spawn_local(async move {
                 match api_me(&token).await {
                     Ok(me_response) => {
-                        cloned_user.dispatch(CurrentUserDispatchActions {
-                            action_type: CurrentUserActions::LoginSuccess,
-                            login_response: Some(LoginResponse { token }),
-                            me_response: Some(me_response),
-                        });
+                        let user = User {
+                            id: me_response.id,
+                            username: me_response.username,
+                            created_at: me_response.created_at,
+                        };
+                        cloned_user.dispatch(CurrentUserAction::LoginSuccess { token, user });
                     }
                     Err(_) => {
                         SessionStorage::clear();
-                        cloned_user.dispatch(CurrentUserDispatchActions {
-                            action_type: CurrentUserActions::LoginFail,
-                            login_response: None,
-                            me_response: None,
-                        });
+                        cloned_user.dispatch(CurrentUserAction::LoginFail);
                     }
                 }
             });
