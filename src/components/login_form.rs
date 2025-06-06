@@ -1,4 +1,4 @@
-use crate::api::user::{api_login, api_me, LoginResponse, MeResponse, User};
+use crate::api::user::{api_login, api_me, LoginResponse, User};
 use crate::components::alert::*;
 use crate::components::input::*;
 use crate::contexts::{CurrentUserAction, CurrentUserContext};
@@ -25,17 +25,17 @@ fn display_error(err: &gloo_net::Error) -> String {
 async fn login(
     username: String,
     password: String,
-) -> Result<(LoginResponse, MeResponse), gloo_net::Error> {
+) -> Result<(LoginResponse, User), gloo_net::Error> {
     let login_response = api_login(username, password).await?;
-    let me_response = api_me(&login_response.token).await?;
-    Ok((login_response, me_response))
+    let user = api_me(&login_response.token).await?;
+    Ok((login_response, user))
 }
 
 #[function_component(LoginForm)]
 pub fn login_form() -> Html {
     let navigator = use_navigator();
     let current_user_ctx =
-        use_context::<CurrentUserContext>().expect("Current user context is missing");
+        use_context::<CurrentUserContext>().expect("The current user context is missing");
     let credentials = use_state(LoginCredentials::default);
     let error_message_handle = use_state(String::default);
     let error_message = (*error_message_handle).clone();
@@ -76,12 +76,7 @@ pub fn login_form() -> Html {
         let cloned_current_user_ctx = current_user_ctx.clone();
         spawn_local(async move {
             match login(creds.username, creds.password).await {
-                Ok((login_response, me_response)) => {
-                    let user = User {
-                        id: me_response.id,
-                        username: me_response.username,
-                        created_at: me_response.created_at,
-                    };
+                Ok((login_response, user)) => {
                     cloned_current_user_ctx.dispatch(CurrentUserAction::LoginSuccess {
                         token: login_response.token,
                         user,

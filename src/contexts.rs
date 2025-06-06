@@ -1,4 +1,4 @@
-use crate::api::user::{api_me, LoginResponse, MeResponse, User};
+use crate::api::user::{api_me, LoginResponse, User};
 use gloo_storage::{SessionStorage, Storage};
 use std::rc::Rc;
 use yew::platform::spawn_local;
@@ -84,12 +84,7 @@ pub fn current_user_provider(props: &Props) -> Html {
             let cloned_user = user.clone();
             spawn_local(async move {
                 match api_me(&token).await {
-                    Ok(me_response) => {
-                        let user = User {
-                            id: me_response.id,
-                            username: me_response.username,
-                            created_at: me_response.created_at,
-                        };
+                    Ok(user) => {
                         cloned_user.dispatch(CurrentUserAction::LoginSuccess { token, user });
                     }
                     Err(_) => {
