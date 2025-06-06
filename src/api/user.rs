@@ -17,7 +17,7 @@ pub struct LoginResponse {
 }
 
 pub async fn api_login(username: String, password: String) -> Result<LoginResponse, Error> {
-    let response = Request::post(&format!("{}/login", API_URL))
+    let response = Request::post(&format!("{}/login", &*API_URL))
         .json(&json!({ "username": username, "password": password }))?
         .send()
         .await?;
@@ -33,7 +33,7 @@ pub async fn api_login(username: String, password: String) -> Result<LoginRespon
 }
 
 pub async fn api_me(token: &str) -> Result<User, Error> {
-    let response = Request::get(&format!("{}/me", API_URL))
+    let response = Request::get(&format!("{}/me", &*API_URL))
         .header("Authorization", &format!("Bearer {}", token))
         .send()
         .await?;

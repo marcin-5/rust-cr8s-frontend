@@ -1,3 +1,7 @@
 pub mod user;
 
-pub static API_URL: &'static str = "http://localhost:8000";
+use once_cell::sync::Lazy;
+use std::env;
+
+pub static API_URL: Lazy<String> =
+    Lazy::new(|| env::var("API_URL").unwrap_or_else(|_| "http://localhost:8000".to_string()));

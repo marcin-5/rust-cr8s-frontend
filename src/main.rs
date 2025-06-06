@@ -41,5 +41,7 @@ fn app() -> Html {
 }
 
 fn main() {
+    dotenv::dotenv().ok();
+
     yew::Renderer::<App>::new().render();
 }
