@@ -12,6 +12,8 @@ enum Route {
     Home,
     #[at("/rustaceans")]
     Rustaceans,
+    #[at("/rustaceans/add")]
+    RustaceansAdd,
     #[at("/crates")]
     Crates,
     #[at("/login")]
@@ -25,6 +27,8 @@ fn switch(route: Route) -> Html {
     match route {
         Route::Login => html! { <pages::login::Login /> },
         Route::Home => html! { <pages::home::Home /> },
+        Route::Rustaceans => html! { <pages::rustaceans::index::Rustaceans /> },
+        Route::RustaceansAdd => html! { <pages::rustaceans::add::RustaceansAdd /> },
         _ => html! { <pages::not_found::NotFound /> },
     }
 }
