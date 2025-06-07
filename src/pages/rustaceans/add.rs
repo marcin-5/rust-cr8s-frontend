@@ -14,7 +14,7 @@ pub fn rustaceans_add() -> Html {
                 </div>
                 <div class="col mt-3">
                     <Header />
-                    <RustaceanForm />
+                    <RustaceanForm rustacean_id={None} />
                 </div>
             </div>
         </div>
