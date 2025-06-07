@@ -1,4 +1,4 @@
-mod alert;
+pub(crate) mod alert;
 pub mod header;
 pub mod input;
 pub mod login_form;
