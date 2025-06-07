@@ -69,3 +69,11 @@ pub async fn api_rustacean_update(
         .await?;
     response.json::<Rustacean>().await
 }
+
+pub async fn api_rustacean_delete(token: &String, id: i32) -> Result<(), Error> {
+    let _ = Request::delete(&create_authenticated_url(&format!("/rustaceans/{}", id)))
+        .header("Authorization", &add_auth_header(token))
+        .send()
+        .await?;
+    Ok(())
+}
