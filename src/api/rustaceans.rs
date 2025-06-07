@@ -1,4 +1,4 @@
-use crate::api::API_URL;
+use crate::api::{add_auth_header, create_authenticated_url, API_URL};
 use gloo_net::http::Request;
 use gloo_net::Error;
 use serde::{Deserialize, Serialize};
@@ -15,14 +15,6 @@ pub struct Rustacean {
 pub struct RustaceanData {
     pub name: String,
     pub email: String,
-}
-
-fn create_authenticated_url(endpoint: &str) -> String {
-    format!("{}{}", &*API_URL, endpoint)
-}
-
-fn add_auth_header(token: &str) -> String {
-    format!("Bearer {}", token)
 }
 
 pub async fn api_rustaceans(token: &str) -> Result<Vec<Rustacean>, Error> {
