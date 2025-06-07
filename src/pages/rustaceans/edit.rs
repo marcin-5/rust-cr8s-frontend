@@ -1,10 +1,8 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
 
 use crate::components::header::Header;
 use crate::components::rustacean_form::RustaceanForm;
 use crate::components::sidebar::Sidebar;
-use crate::Route;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
