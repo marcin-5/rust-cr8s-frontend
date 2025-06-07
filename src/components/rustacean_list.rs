@@ -58,11 +58,11 @@ pub fn rustacean_list() -> Html {
                                             <td>{rustacean.email}</td>
                                             <td>{rustacean.created_at}</td>
                                             <td>
-                                                <Link<Route> to={Route::RustaceansAdd}>
+                                                <Link<Route> to={Route::RustaceansEdit { id: rustacean.id }} classes="link-secondary">
                                                     {"edit"}
                                                 </Link<Route>>
-                                                <span> {"/"} </span>
-                                                <Link<Route> to={Route::RustaceansAdd}>
+                                                <span class="mx-1">{"/"}</span>
+                                                <Link<Route> to={Route::RustaceansAdd} classes="link-danger">
                                                     {"delete"}
                                                 </Link<Route>>
                                             </td>
