@@ -1,4 +1,5 @@
 pub(crate) mod alert;
+pub mod button;
 pub mod header;
 pub mod input;
 pub mod login_form;
