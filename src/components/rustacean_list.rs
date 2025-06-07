@@ -62,7 +62,7 @@ pub fn rustacean_list() -> Html {
                                                     {"edit"}
                                                 </Link<Route>>
                                                 <span class="mx-1">{"/"}</span>
-                                                <Link<Route> to={Route::RustaceansAdd} classes="link-danger">
+                                                <Link<Route> to={Route::RustaceansDelete { id: rustacean.id }} classes="link-danger">
                                                     {"delete"}
                                                 </Link<Route>>
                                             </td>
