@@ -1,3 +1,4 @@
+use crate::components::button::Button;
 use crate::{
     contexts::{CurrentUserAction, CurrentUserContext},
     Route,
@@ -31,7 +32,7 @@ pub fn header() -> Html {
                 <div class="text-end">
                     <p>
                         <span class="pe-1">{"Welcome "}{user.username.clone()}</span>
-                        <button class="btn btn-danger" onclick={onclick}>{"Logout"}</button>
+                        <Button class="btn btn-outline-danger" onclick={onclick}>{"Logout"}</Button>
                     </p>
                 </div>
             }

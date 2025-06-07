@@ -4,6 +4,7 @@ use yew_router::prelude::*;
 
 use crate::api::rustaceans::{api_rustacean_create, api_rustacean_show, api_rustacean_update};
 use crate::components::alert::Alert;
+use crate::components::button::Button;
 use crate::components::input::Input;
 use crate::contexts::CurrentUserContext;
 use crate::Route;
@@ -113,7 +114,9 @@ pub fn rustacean_form(props: &Props) -> Html {
                     onchange={email_changed}
                 />
             </div>
-            <button type="submit" class="btn btn-primary">{button_text}</button>
+            <Button button_type="submit" class="btn btn-primary">
+                {button_text}
+            </Button>
         </form>
     }
 }

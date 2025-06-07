@@ -1,5 +1,6 @@
 use crate::api::rustaceans::api_rustacean_delete;
 use crate::components::alert::Alert;
+use crate::components::button::Button;
 use crate::components::header::Header;
 use crate::components::sidebar::Sidebar;
 use crate::contexts::CurrentUserContext;
@@ -64,7 +65,7 @@ pub fn rustaceans_delete(props: &Props) -> Html {
                                 {"Are you sure you want to delete rustacean #"}
                                 {rustacean_id}{"?"}
                             </p>
-                            <button onclick={onclick} class="btn btn-danger">{"Delete"}</button>
+                            <Button onclick={onclick} class="btn btn-danger">{"Delete"}</Button>
                         </div>
                     </div>
                 </div>

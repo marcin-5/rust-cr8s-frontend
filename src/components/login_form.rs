@@ -1,5 +1,6 @@
 use crate::api::user::{api_login, api_me, LoginResponse, User};
 use crate::components::alert::*;
+use crate::components::button::Button;
 use crate::components::input::*;
 use crate::contexts::{CurrentUserAction, CurrentUserContext};
 use crate::Route;
@@ -117,7 +118,7 @@ pub fn login_form() -> Html {
                     onchange={password_changed}
                 />
             </div>
-            <button type="submit" class="btn btn-primary">{"Login"}</button>
+            <Button button_type="submit" class="btn btn-success">{"Login"}</Button>
         </form>
     }
 }
