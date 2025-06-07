@@ -7,7 +7,7 @@ pub fn home() -> Html {
     html! {
         <div class="container">
             <div class="row">
-                <div class="col">
+                <div class="col-sm-auto">
                     <Sidebar />
                 </div>
                 <div class="col mt-3">
