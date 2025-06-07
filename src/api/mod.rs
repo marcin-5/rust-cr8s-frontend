@@ -1,3 +1,4 @@
+pub mod rustaceans;
 pub mod user;
 
 use once_cell::sync::Lazy;
