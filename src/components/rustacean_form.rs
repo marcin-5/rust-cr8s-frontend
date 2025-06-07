@@ -30,6 +30,10 @@ pub fn rustacean_form(props: &Props) -> Html {
     let error_message = (*error_message_handle).clone();
     let loading = *loading_handle;
 
+    // Determine if this is an edit operation
+    let is_editing = props.rustacean_id.is_some();
+    let button_text = if is_editing { "Update" } else { "Save" };
+
     // Load existing rustacean data if editing
     {
         let name_handle = name_handle.clone();
@@ -109,7 +113,7 @@ pub fn rustacean_form(props: &Props) -> Html {
                     onchange={email_changed}
                 />
             </div>
-            <button type="submit" class="btn btn-primary">{"Save"}</button>
+            <button type="submit" class="btn btn-primary">{button_text}</button>
         </form>
     }
 }
