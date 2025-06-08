@@ -1,22 +1,13 @@
 use yew::prelude::*;
 
-use crate::components::header::Header;
 use crate::components::rustacean_form::RustaceanForm;
-use crate::components::sidebar::Sidebar;
+use crate::pages::common::layout::AuthenticatedLayout;
 
 #[function_component(RustaceansAdd)]
 pub fn rustaceans_add() -> Html {
     html! {
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-auto">
-                    <Sidebar />
-                </div>
-                <div class="col mt-3">
-                    <Header />
-                    <RustaceanForm rustacean_id={None} />
-                </div>
-            </div>
-        </div>
+        <AuthenticatedLayout>
+            <RustaceanForm rustacean_id={None} />
+        </AuthenticatedLayout>
     }
 }
