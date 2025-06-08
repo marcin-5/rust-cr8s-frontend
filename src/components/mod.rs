@@ -1,5 +1,6 @@
 pub(crate) mod alert;
 pub mod button;
+pub mod delete_confirmation;
 pub mod header;
 pub mod input;
 pub mod login_form;
