@@ -1,5 +1,6 @@
 pub(crate) mod alert;
 pub mod button;
+pub mod crate_list;
 pub mod delete_confirmation;
 pub mod header;
 pub mod input;
