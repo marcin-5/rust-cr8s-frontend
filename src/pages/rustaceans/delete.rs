@@ -1,9 +1,8 @@
 use crate::api::rustaceans::api_rustacean_delete;
 use crate::components::alert::Alert;
-use crate::components::button::Button;
-use crate::components::header::Header;
-use crate::components::sidebar::Sidebar;
+use crate::components::delete_confirmation::DeleteConfirmation;
 use crate::contexts::CurrentUserContext;
+use crate::pages::common::layout::AuthenticatedLayout;
 use crate::Route;
 use yew::platform::spawn_local;
 use yew::prelude::*;
@@ -14,65 +13,81 @@ pub struct Props {
     pub id: i32,
 }
 
-fn handle_delete_rustacean(
-    token: String,
-    id: i32,
-    navigator: Navigator,
-    error_handle: UseStateHandle<String>,
-) {
-    spawn_local(async move {
-        match api_rustacean_delete(&token, id).await {
-            Ok(()) => navigator.push(&Route::Rustaceans),
-            Err(e) => error_handle.set(e.to_string()),
-        }
-    });
-}
-
 #[function_component(RustaceansDelete)]
 pub fn rustaceans_delete(props: &Props) -> Html {
     let navigator = use_navigator().expect("Navigator not available");
-    let current_user_ctx =
-        use_context::<CurrentUserContext>().expect("Current user context is missing");
+    let current_user_ctx = use_context::<CurrentUserContext>();
     let error_message_handle = use_state(String::default);
+    let is_loading_handle = use_state(|| false);
+
     let error_message = (*error_message_handle).clone();
+    let is_loading = *is_loading_handle;
 
-    match &current_user_ctx.token {
-        Some(token) => {
-            let token = token.clone();
-            let rustacean_id = props.id;
-            let onclick = Callback::from(move |e: MouseEvent| {
-                e.prevent_default();
-                handle_delete_rustacean(
-                    token.clone(),
-                    rustacean_id,
-                    navigator.clone(),
-                    error_message_handle.clone(),
-                );
-            });
-
-            html! {
-                <div class="container">
-                    <div class="row">
-                        <div class="col-sm-auto">
-                            <Sidebar />
-                        </div>
-                        <div class="col mt-3">
-                            <Header />
-                            if !error_message.is_empty() {
-                                <Alert alert_type={"danger"} message={error_message} />
-                            }
-                            <p>
-                                {"Are you sure you want to delete rustacean #"}
-                                {rustacean_id}{"?"}
-                            </p>
-                            <Button onclick={onclick} class="btn btn-danger">{"Delete"}</Button>
-                        </div>
-                    </div>
-                </div>
-            }
+    // Check if user is authenticated
+    let current_user_ctx = match current_user_ctx {
+        Some(ctx) => ctx,
+        None => {
+            // Redirect to login if no context
+            navigator.push(&Route::Login);
+            return html! {};
         }
-        None => html! {
-            <Redirect<Route> to={Route::Login} />
-        },
+    };
+
+    let on_delete = {
+        let id = props.id;
+        let token = current_user_ctx.token.clone();
+        let navigator = navigator.clone();
+        let error_handle = error_message_handle.clone();
+        let loading_handle = is_loading_handle.clone();
+
+        Callback::from(move |_: MouseEvent| {
+            // Check if token exists
+            let token = match &token {
+                Some(t) if !t.is_empty() => t.clone(),
+                _ => {
+                    error_handle.set("Authentication required".to_string());
+                    return;
+                }
+            };
+
+            let navigator = navigator.clone();
+            let error_handle = error_handle.clone();
+            let loading_handle = loading_handle.clone();
+
+            loading_handle.set(true);
+            error_handle.set(String::new()); // Clear previous errors
+
+            spawn_local(async move {
+                match api_rustacean_delete(&token, id).await {
+                    Ok(()) => navigator.push(&Route::Rustaceans),
+                    Err(e) => {
+                        error_handle.set(e.to_string());
+                        loading_handle.set(false);
+                    }
+                }
+            });
+        })
+    };
+
+    let on_cancel = {
+        let navigator = navigator.clone();
+        Callback::from(move |_: MouseEvent| {
+            navigator.push(&Route::Rustaceans);
+        })
+    };
+
+    html! {
+        <AuthenticatedLayout>
+            if !error_message.is_empty() {
+                <Alert alert_type={"danger"} message={error_message} />
+            }
+            <DeleteConfirmation
+                item_name={"rustacean"}
+                item_id={props.id}
+                on_delete={on_delete}
+                on_cancel={on_cancel}
+                is_loading={is_loading}
+            />
+        </AuthenticatedLayout>
     }
 }
